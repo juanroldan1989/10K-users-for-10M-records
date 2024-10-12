@@ -96,4 +96,11 @@ data-query      | Fetching data for location: Port Margaretland
 data-query      | Average temperature in Port Margaretland: 8.81°C
 data-query      | Database connection closed
 data-query exited with code 0
+
+flask           | [2024-10-12 13:06:24 +0000] [1] [INFO] Starting gunicorn 23.0.0
+flask           | [2024-10-12 13:06:24 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
+flask           | [2024-10-12 13:06:24 +0000] [1] [INFO] Using worker: sync
+flask           | [2024-10-12 13:06:24 +0000] [6] [INFO] Booting worker with pid: 6
+flask           | [2024-10-12 13:06:24 +0000] [7] [INFO] Booting worker with pid: 7
+flask           | [2024-10-12 13:06:24 +0000] [8] [INFO] Booting worker with pid: 8
 ```
