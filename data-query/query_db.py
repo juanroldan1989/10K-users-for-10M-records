@@ -9,13 +9,21 @@ POSTGRES_USER = os.environ.get('POSTGRES_USER')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 POSTGRES_DB = os.environ.get('POSTGRES_DB')
 
-# Connect to PostgreSQL database
-conn = psycopg2.connect(
-    host=POSTGRES_HOST,
-    database=POSTGRES_DB,
-    user=POSTGRES_USER,
-    password=POSTGRES_PASSWORD
-)
+# Database connection
+def get_db_connection():
+  try:
+    conn = psycopg2.connect(
+      host=os.environ.get('POSTGRES_HOST', 'localhost'),
+      database=os.environ.get('POSTGRES_DB', 'mydb'),
+      user=os.environ.get('POSTGRES_USER', 'user'),
+      password=os.environ.get('POSTGRES_PASSWORD', 'password')
+    )
+    return conn
+  except psycopg2.OperationalError as e:
+    print(f"Error connecting to the database: {e}")
+    return None
+
+conn = get_db_connection()
 cur = conn.cursor()
 
 # Fetch 5 distinct locations from the database
@@ -23,20 +31,20 @@ cur.execute("SELECT DISTINCT location FROM weather_data LIMIT 5")
 locations = cur.fetchall()
 print("5 distinct locations in the database:")
 for location in locations:
-    print(location[0])
+  print(location[0])
 
 # Iterate over each location and fetch the filtered results
 for location_tuple in locations:
-    location = location_tuple[0]  # Extract the location from the tuple
-    print(f"\nFetching data for location: {location}")
+  location = location_tuple[0]  # Extract the location from the tuple
+  print(f"\nFetching data for location: {location}")
 
-    cur.execute("SELECT AVG(temperature) FROM weather_data WHERE location = %s", (location,))
-    average_temperature = cur.fetchone()[0]
+  cur.execute("SELECT AVG(temperature) FROM weather_data WHERE location = %s", (location,))
+  average_temperature = cur.fetchone()[0]
 
-    if average_temperature is not None:
-        print(f"Average temperature in {location}: {average_temperature:.2f}°C")
-    else:
-        print(f"No data available for {location}")
+  if average_temperature is not None:
+    print(f"Average temperature in {location}: {average_temperature:.2f}°C")
+  else:
+    print(f"No data available for {location}")
 
 # Close the connection
 cur.close()

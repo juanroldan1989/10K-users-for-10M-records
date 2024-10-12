@@ -6,23 +6,25 @@ app = Flask(__name__)
 
 # Database connection
 def get_db_connection():
-  conn = psycopg2.connect(
-    host=os.environ.get('POSTGRES_HOST', 'localhost'),
-    database=os.environ.get('POSTGRES_DB', 'mydb'),
-    user=os.environ.get('POSTGRES_USER', 'user'),
-    password=os.environ.get('POSTGRES_PASSWORD', 'password')
-  )
-  return conn
+  try:
+    conn = psycopg2.connect(
+      host=os.environ.get('POSTGRES_HOST', 'localhost'),
+      database=os.environ.get('POSTGRES_DB', 'mydb'),
+      user=os.environ.get('POSTGRES_USER', 'user'),
+      password=os.environ.get('POSTGRES_PASSWORD', 'password')
+    )
+    return conn
+  except psycopg2.OperationalError as e:
+    print(f"Error connecting to the database: {e}")
+    return None
 
 @app.route('/')
 def index():
   conn = get_db_connection()
   cur = conn.cursor()
-
   # Fetch 10 distinct locations from the database
   cur.execute("SELECT DISTINCT location FROM weather_data LIMIT 10")
   locations = [row[0] for row in cur.fetchall()]
-
   cur.close()
   conn.close()
 

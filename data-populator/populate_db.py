@@ -15,17 +15,24 @@ POSTGRES_USER = os.environ.get('POSTGRES_USER')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 POSTGRES_DB = os.environ.get('POSTGRES_DB')
 
-# Connect to PostgreSQL database
-conn = psycopg2.connect(
-  host=POSTGRES_HOST,
-  database=POSTGRES_DB,
-  user=POSTGRES_USER,
-  password=POSTGRES_PASSWORD
-)
+# Database connection
+def get_db_connection():
+  try:
+    conn = psycopg2.connect(
+      host=os.environ.get('POSTGRES_HOST', 'localhost'),
+      database=os.environ.get('POSTGRES_DB', 'mydb'),
+      user=os.environ.get('POSTGRES_USER', 'user'),
+      password=os.environ.get('POSTGRES_PASSWORD', 'password')
+    )
+    return conn
+  except psycopg2.OperationalError as e:
+    print(f"Error connecting to the database: {e}")
+    return None
 
+conn = get_db_connection()
 cur = conn.cursor()
 
-# Create table if not exists
+print("Creating 'weather_data' table if not exists...")
 cur.execute('''
 CREATE TABLE IF NOT EXISTS weather_data (
   id SERIAL PRIMARY KEY,
@@ -37,6 +44,14 @@ CREATE TABLE IF NOT EXISTS weather_data (
 );
 ''')
 conn.commit()
+print("'weather_data' table created successfully")
+
+print("Creating index on 'location' column...")
+cur.execute('''
+CREATE INDEX IF NOT EXISTS location_idx ON weather_data (location);
+''')
+conn.commit()
+print("Index created successfully")
 
 # Function to generate random weather data
 def generate_weather_data():
