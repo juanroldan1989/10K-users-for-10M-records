@@ -30,6 +30,8 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_HOST: db
       POSTGRES_DB: mydb
+      BATCH_SIZE: 1000
+      TOTAL_RECORDS: 10000
     networks:
       - my_network
     depends_on:

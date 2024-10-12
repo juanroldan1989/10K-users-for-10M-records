@@ -20,8 +20,8 @@ def generate_weather_data():
   return (location, temperature, humidity, wind_speed, timestamp)
 
 # Insert data into the database in batches for better performance
-batch_size = 10000
-total_records = 10000000  # 10 million records
+batch_size = int(os.environ.get('BATCH_SIZE', 1000))
+total_records = int(os.environ.get('TOTAL_RECORDS', 10000)) # 10 million records
 records_inserted = 0
 
 while records_inserted < total_records:
@@ -35,7 +35,7 @@ while records_inserted < total_records:
 
 - **Faker:** Generates random locations and timestamps.
 - **Random:** Generates random temperature, humidity, and wind speed values.
-- **Batch Insertion:** Inserting data in batches of **10,000 records** for better performance.
+- **Batch Insertion:** Inserting data in batches of **10,000 records** for better performance (`BATCH_SIZE` & `TOTAL_RECORDS`)
 
 ## Docker Compose
 
