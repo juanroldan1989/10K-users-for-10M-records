@@ -23,6 +23,8 @@
 
 # 10M records
 
+https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/data-populator/populate_db.py
+
 To populate a PostgreSQL database with 10 million time series records:
 
 - Random weather forecast data is generated and
@@ -60,6 +62,8 @@ while records_inserted < total_records:
 - Populate **parameters**: `BATCH_SIZE` & `TOTAL_RECORDS`
 
 # 10K Users
+
+https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/simulate
 
 1. Tools like `Locust` or `Apache JMeter` can be used to simulate concurrent users interacting with a Flask application.
 
@@ -102,9 +106,13 @@ locust -f locust-with-static-data.py --host=http://localhost:5000
 
 4. Run your Flask application locally to ensure the UI works as expected. Run Locust to simulate 1K concurrent users and monitor the performance.
 
+https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/flask
+
 ## Locust configuration
 
 Access `http://localhost:8089` in browser to start the test, where you can configure all the parameters:
+
+![Screenshot 2024-10-12 at 16 59 48](https://github.com/user-attachments/assets/7ba96957-6241-40e3-abd6-399e88fb28c9)
 
 1. **Number of users (peak concurrency)**: This field defines how many users (or virtual users, VUs) you want Locust to simulate concurrently during the load test.
 
@@ -129,68 +137,28 @@ In this case, Locust will:
 - After 20 seconds, Locust will have reached **1000 users** (50 users \* 20 seconds = 1000 users).
 - Once the 1000 users are reached, the **test will continue with those 1000 users until you stop it** or the test reaches a defined time limit.
 
-# Bottlenecks & Fixes
-
-## Sorry, too many clients already
-
-From `docker-compose` logs:
-
-```ruby
-...
-db | 2024-10-12 14:35:35.208 UTC [4499] FATAL:  sorry, too many clients already
-...
-```
-
-### Connection Pooling
-
-- Instead of opening and closing a new database connection with every request, we can use a connection pool.
-
-- Connection pooling allows **reusing a small set of pre-established database connections**
-
-- **reducing the overhead** of constant connection setup and teardown.
-
-Using psycopg2.pool:
-
-```ruby
-from psycopg2 import pool
-
-# Initialize the connection pool globally
-connection_pool = psycopg2.pool.SimpleConnectionPool(1, 10,  # min, max connections
-  host=os.environ.get('POSTGRES_HOST', 'localhost'),
-  database=os.environ.get('POSTGRES_DB', 'mydb'),
-  user=os.environ.get('POSTGRES_USER', 'user'),
-  password=os.environ.get('POSTGRES_PASSWORD', 'password'))
-
-def get_db_connection():
-  if connection_pool:
-    return connection_pool.getconn()
-
-def release_db_connection(conn):
-  if connection_pool:
-    connection_pool.putconn(conn)
-...
-```
-
-### Benefits
-
-- Connection pooling reuses connections, reducing the overhead of creating new ones.
-- Helps prevent hitting connection limits on the database server.
-- Helps improve performance in high-traffic situations.
-
 # Development
+
+https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/docker-compose.yaml
 
 ```ruby
 $ docker-compose up
 ```
 
-## Services
+## Containers
 
-4 services are launched: **db**, **data-populator** and **data-query**
+4 containers are started: **db**, **data-populator**, **data-query** and **flask**.
 
 1. **db** contains a PostgreSQL database
+
 2. **data-populator** inserts data in **db** once **db**'s condition is **service_healthy**
-3. **data-query** performs queries in **db** once **data-populator**'s condition is **service_completed_successfully**
-4. **flask** application to query **temperature** data by **location**
+   https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/data-populator
+
+3. **data-query** performs **health-check** queries in **db** once **data-populator**'s condition is **service_completed_successfully**
+   https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/data-query
+
+4. **flask** application with UI to query **temperature** data by **location**
+   https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/flask
 
 ```ruby
 $ docker-compose up
@@ -257,6 +225,54 @@ Access: `http://localhost:5000`
 2. Check Average Temperature on Location
 3. Adjust source code as needed within `flask` folder.
 4. Run `docker-compose up --build`
+
+# Bottlenecks & Fixes
+
+## Sorry, too many clients already
+
+From `docker-compose` logs:
+
+```ruby
+...
+db | 2024-10-12 14:35:35.208 UTC [4499] FATAL:  sorry, too many clients already
+...
+```
+
+### Connection Pooling
+
+- Instead of opening and closing a new database connection with every request, we can use a connection pool.
+
+- Connection pooling allows **reusing a small set of pre-established database connections**
+
+- **reducing the overhead** of constant connection setup and teardown.
+
+Using psycopg2.pool:
+
+```ruby
+from psycopg2 import pool
+
+# Initialize the connection pool globally
+connection_pool = psycopg2.pool.SimpleConnectionPool(1, 10,  # min, max connections
+  host=os.environ.get('POSTGRES_HOST', 'localhost'),
+  database=os.environ.get('POSTGRES_DB', 'mydb'),
+  user=os.environ.get('POSTGRES_USER', 'user'),
+  password=os.environ.get('POSTGRES_PASSWORD', 'password'))
+
+def get_db_connection():
+  if connection_pool:
+    return connection_pool.getconn()
+
+def release_db_connection(conn):
+  if connection_pool:
+    connection_pool.putconn(conn)
+...
+```
+
+### Benefits
+
+- Connection pooling reuses connections, reducing the overhead of creating new ones.
+- Helps prevent hitting connection limits on the database server.
+- Helps improve performance in high-traffic situations.
 
 # Contribute
 
