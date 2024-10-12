@@ -40,6 +40,3 @@ def query():
   conn.close()
 
   return render_template('results.html', location=location, avg_temp=f"{average_temperature:.2f}")
-
-if __name__ == '__main__':
-  app.run(debug=True)
