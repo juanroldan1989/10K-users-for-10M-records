@@ -50,17 +50,28 @@ def generate_weather_data():
 # Insert data into the database in batches for better performance
 batch_size = int(os.environ.get('BATCH_SIZE', 1000))
 total_records = int(os.environ.get('TOTAL_RECORDS', 10000))
-records_inserted = 0
 
-while records_inserted < total_records:
-  batch = [generate_weather_data() for _ in range(batch_size)]
-  args_str = ",".join(cur.mogrify("(%s, %s, %s, %s, %s)", record).decode("utf-8") for record in batch)
-  cur.execute(f"INSERT INTO weather_data (location, temperature, humidity, wind_speed, timestamp) VALUES {args_str}")
-  conn.commit()
-  records_inserted += batch_size
-  print(f"{records_inserted}/{total_records} records inserted")
+# Check the current number of records in the database
+cur.execute("SELECT COUNT(*) FROM weather_data;")
+current_records = cur.fetchone()[0]
 
-# Close the connection
-cur.close()
-conn.close()
-print("Database connection closed")
+# Calculate how many more records need to be inserted
+records_needed = total_records - current_records
+if records_needed <= 0:
+  print("The database already contains the required number of records.")
+else:
+  print(f"Adding {records_needed} records to the database...")
+  records_inserted = 0
+
+  while records_inserted < total_records:
+    batch = [generate_weather_data() for _ in range(batch_size)]
+    args_str = ",".join(cur.mogrify("(%s, %s, %s, %s, %s)", record).decode("utf-8") for record in batch)
+    cur.execute(f"INSERT INTO weather_data (location, temperature, humidity, wind_speed, timestamp) VALUES {args_str}")
+    conn.commit()
+    records_inserted += batch_size
+    print(f"{records_inserted}/{total_records} records inserted")
+
+  # Close the connection
+  cur.close()
+  conn.close()
+  print("Database connection closed")
