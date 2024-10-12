@@ -17,6 +17,10 @@ ENV POSTGRES_USER=user
 ENV POSTGRES_PASSWORD=password
 ENV POSTGRES_DB=mydb
 
+# Custom values for the data-populator script
+ENV BATCH_SIZE=1000
+ENV TOTAL_RECORDS=10000
+
 # Make port 5432 available to the world outside this container (if needed)
 EXPOSE 5432
 

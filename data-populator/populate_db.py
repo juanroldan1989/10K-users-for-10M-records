@@ -48,8 +48,8 @@ def generate_weather_data():
   return (location, temperature, humidity, wind_speed, timestamp)
 
 # Insert data into the database in batches for better performance
-batch_size = 1000
-total_records = 10000  # 10 million records
+batch_size = int(os.environ.get('BATCH_SIZE', 1000))
+total_records = int(os.environ.get('TOTAL_RECORDS', 10000))
 records_inserted = 0
 
 while records_inserted < total_records:
