@@ -1,4 +1,23 @@
-# 10K-users-for-10M-records
+<h4 align="center">10M records | 10K users | Query by script & UI | Terraform </h4>
+
+<p align="center">
+  <a href="https://github.com/juanroldan1989/10K-users-for-10M-records/commits/main">
+  <img src="https://img.shields.io/github/last-commit/juanroldan1989/10K-users-for-10M-records.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub last commit">
+  <a href="https://github.com/juanroldan1989/10K-users-for-10M-records/issues">
+  <img src="https://img.shields.io/github/issues-raw/juanroldan1989/10K-users-for-10M-records.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub issues">
+  <a href="https://github.com/juanroldan1989/10K-users-for-10M-records/pulls">
+  <img src="https://img.shields.io/github/issues-pr-raw/juanroldan1989/10K-users-for-10M-records.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub pull requests">
+  <a href="https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg">
+  </a>
+</p>
+
+<p align="center">
+  <a href="#10k-records">10M Records</a> •
+  <a href="#docker-compose">Docker Compose</a> •
+  <a href="#development">Development</a>  •
+  <a href="#contribute">Contribute</a>
+</p>
 
 # 10M records
 
@@ -35,11 +54,25 @@ while records_inserted < total_records:
 
 - **Faker:** Generates random locations and timestamps.
 - **Random:** Generates random temperature, humidity, and wind speed values.
-- **Batch Insertion:** Inserting data in batches of **10,000 records** for better performance (`BATCH_SIZE` & `TOTAL_RECORDS`)
+- **Batch Insertion:** Inserting data in batches of **10,000 records** for better performance
+- Populate **parameters**: `BATCH_SIZE` & `TOTAL_RECORDS`
 
-## Docker Compose
+# Docker Compose
 
-3 services are launched: **db**, **data-populator** and **data-query**
+```ruby
+$ docker-compose up
+```
+
+Access: `http://localhost:5000`
+
+1. Choose Location from dropdown
+2. Check Average Temperature on Location
+3. Adjust source code as needed within `flask` folder.
+4. Run `docker-compose up --build`
+
+## Services
+
+4 services are launched: **db**, **data-populator** and **data-query**
 
 1. **db** contains a PostgreSQL database
 2. **data-populator** inserts data in **db** once **db**'s condition is **service_healthy**
@@ -104,3 +137,13 @@ flask           | [2024-10-12 13:06:24 +0000] [6] [INFO] Booting worker with pid
 flask           | [2024-10-12 13:06:24 +0000] [7] [INFO] Booting worker with pid: 7
 flask           | [2024-10-12 13:06:24 +0000] [8] [INFO] Booting worker with pid: 8
 ```
+
+# Contribute
+
+Got **something interesting** you'd like to **add or change**? Please feel free to [Open a Pull Request](https://github.com/juanroldan1989/10K-users-for-10M-records/pulls)
+
+If you want to say **thank you** and/or support the active development of `10K Users for 10M records`:
+
+1. Add a [GitHub Star](https://github.com/juanroldan1989/10K-users-for-10M-records/stargazers) to the project.
+2. Tweet about the project [on your Twitter](https://twitter.com/intent/tweet?text=Hey%20I've%20just%20discovered%20this%20cool%20app%20on%20Github%20by%20@JhonnyDaNiro%20-%10K%20Users%2010M&url=https://github.com/juanroldan1989/10K-users-for-10M-records/&via=Github).
+3. Write a review or tutorial on [Medium](https://medium.com), [Dev.to](https://dev.to) or personal blog.
