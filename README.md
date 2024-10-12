@@ -57,7 +57,71 @@ while records_inserted < total_records:
 - **Batch Insertion:** Inserting data in batches of **10,000 records** for better performance
 - Populate **parameters**: `BATCH_SIZE` & `TOTAL_RECORDS`
 
-# Docker Compose
+# 10K Users
+
+1. Tools like `Locust` or `Apache JMeter` can be used to simulate concurrent users interacting with a Flask application.
+
+```ruby
+pip install locust
+```
+
+2. Write a Locustfile: Create a file named locustfile.py with the following content:
+
+```ruby
+from locust import HttpUser, TaskSet, task
+```
+
+```ruby
+class UserBehavior(TaskSet):
+  @task
+  def query_weather(self):
+    locations = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix']
+    self.client.post("/query", data={'location': random.choice(locations)})
+
+class WebsiteUser(HttpUser):
+  tasks = [UserBehavior]
+  min_wait = 1000 # wait between tasks in milliseconds
+  max_wait = 2000
+```
+
+Run Locust:
+
+```ruby
+locust -f locustfile.py --host=http://localhost:5000
+```
+
+3. Access `http://localhost:8089` in browser to start the test, where you can configure the number of users to simulate.
+
+4. Run your Flask application locally to ensure the UI works as expected. Run Locust to simulate 1K concurrent users and monitor the performance.
+
+## Locust configuration
+
+Access `http://localhost:8089` in browser to start the test, where you can configure all the parameters:
+
+1. **Number of users (peak concurrency)**: This field defines how many users (or virtual users, VUs) you want Locust to simulate concurrently during the load test.
+
+- These users represent the number of clients that are sending requests to your system at the same time.
+
+- Example: If you set "Number of users" to 1000, Locust will simulate 1000 users simultaneously sending requests to the target system. This simulates how your system would handle a real-world load of 1000 concurrent users.
+
+2. **Ramp up (users started/second)**: This field controls how fast Locust will start new users during the test. It specifies the number of users that will be started per second.
+
+- Example: If you set "Ramp up" to **10**, Locust will add **10 new users per second** until it reaches the total number specified in the "Number of users" field.
+
+- This feature allows you to gradually increase the load instead of starting all users at once, which simulates a more realistic load scenario where users gradually connect to the system over time.
+
+3. **Example Scenario:**
+
+- Number of users (peak concurrency): **1000**
+- Ramp up (users started/second): **50**
+
+In this case, Locust will:
+
+- Start **50 users** per second.
+- After 20 seconds, Locust will have reached **1000 users** (50 users \* 20 seconds = 1000 users).
+- Once the 1000 users are reached, the **test will continue with those 1000 users until you stop it** or the test reaches a defined time limit.
+
+# Development
 
 ```ruby
 $ docker-compose up
