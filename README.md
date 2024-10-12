@@ -44,6 +44,7 @@ while records_inserted < total_records:
 1. **db** contains a PostgreSQL database
 2. **data-populator** inserts data in **db** once **db**'s condition is **service_healthy**
 3. **data-query** performs queries in **db** once **data-populator**'s condition is **service_completed_successfully**
+4. **flask** application to query **temperature** data by **location**
 
 ```ruby
 $ docker-compose up
