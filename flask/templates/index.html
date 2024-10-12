@@ -10,9 +10,13 @@
     <div class="container mx-auto mt-10">
         <h1 class="text-3xl font-bold mb-5 text-center">Average Temperature Query</h1>
         <form action="/query" method="POST" class="bg-white p-6 rounded shadow-md">
-            <label for="location" class="block text-sm font-medium text-gray-700">Location:</label>
-            <input type="text" name="location" id="location" required
-                   class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500" />
+            <label for="location" class="block text-sm font-medium text-gray-700">Select a Location:</label>
+            <select name="location" id="location" required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500">
+                {% for loc in locations %}
+                    <option value="{{ loc }}">{{ loc }}</option>
+                {% endfor %}
+            </select>
             <button type="submit" class="mt-4 w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600">Get Average Temperature</button>
         </form>
     </div>

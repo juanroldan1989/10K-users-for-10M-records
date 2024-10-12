@@ -16,7 +16,18 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-  return render_template('index.html')
+  conn = get_db_connection()
+  cur = conn.cursor()
+
+  # Fetch 10 distinct locations from the database
+  cur.execute("SELECT DISTINCT location FROM weather_data LIMIT 10")
+  locations = [row[0] for row in cur.fetchall()]
+
+  cur.close()
+  conn.close()
+
+  # Pass locations to the template
+  return render_template('index.html', locations=locations)
 
 @app.route('/query', methods=['POST'])
 def query():
