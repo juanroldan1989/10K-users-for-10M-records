@@ -1,4 +1,6 @@
-<h4 align="center">10M records | 10K users | Query by script & UI | Terraform </h4>
+![Screenshot 2024-10-12 at 16 43 48](https://github.com/user-attachments/assets/dcf8329d-2e59-452b-9626-49b6032dfb41)
+
+<h4 align="center">10M records | 10K users | Query by script & UI | Docker Compose | Terraform </h4>
 
 <p align="center">
   <a href="https://github.com/juanroldan1989/10K-users-for-10M-records/commits/main">
@@ -121,18 +123,23 @@ In this case, Locust will:
 - After 20 seconds, Locust will have reached **1000 users** (50 users \* 20 seconds = 1000 users).
 - Once the 1000 users are reached, the **test will continue with those 1000 users until you stop it** or the test reaches a defined time limit.
 
+# Bottlenecks & Fixes
+
+## Sorry, too many clients already
+
+From `docker-compose` logs:
+
+```ruby
+...
+db | 2024-10-12 14:35:35.208 UTC [4499] FATAL:  sorry, too many clients already
+...
+```
+
 # Development
 
 ```ruby
 $ docker-compose up
 ```
-
-Access: `http://localhost:5000`
-
-1. Choose Location from dropdown
-2. Check Average Temperature on Location
-3. Adjust source code as needed within `flask` folder.
-4. Run `docker-compose up --build`
 
 ## Services
 
@@ -201,6 +208,13 @@ flask           | [2024-10-12 13:06:24 +0000] [6] [INFO] Booting worker with pid
 flask           | [2024-10-12 13:06:24 +0000] [7] [INFO] Booting worker with pid: 7
 flask           | [2024-10-12 13:06:24 +0000] [8] [INFO] Booting worker with pid: 8
 ```
+
+Access: `http://localhost:5000`
+
+1. Choose Location from dropdown
+2. Check Average Temperature on Location
+3. Adjust source code as needed within `flask` folder.
+4. Run `docker-compose up --build`
 
 # Contribute
 
