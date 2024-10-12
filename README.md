@@ -86,10 +86,16 @@ class WebsiteUser(HttpUser):
   max_wait = 2000
 ```
 
-Run Locust:
+- Run Locust using a DB query to fetch 10 locations:
 
 ```ruby
-locust -f locustfile.py --host=http://localhost:5000
+locust -f locust-with-real-data.py --host=http://localhost:5000
+```
+
+- Run Locust using a static list of 10 locations harcoded:
+
+```ruby
+locust -f locust-with-static-data.py --host=http://localhost:5000
 ```
 
 3. Access `http://localhost:8089` in browser to start the test, where you can configure the number of users to simulate.
@@ -134,6 +140,42 @@ From `docker-compose` logs:
 db | 2024-10-12 14:35:35.208 UTC [4499] FATAL:  sorry, too many clients already
 ...
 ```
+
+### Connection Pooling
+
+- Instead of opening and closing a new database connection with every request, we can use a connection pool.
+
+- Connection pooling allows **reusing a small set of pre-established database connections**
+
+- **reducing the overhead** of constant connection setup and teardown.
+
+Using psycopg2.pool:
+
+```ruby
+from psycopg2 import pool
+
+# Initialize the connection pool globally
+connection_pool = psycopg2.pool.SimpleConnectionPool(1, 10,  # min, max connections
+  host=os.environ.get('POSTGRES_HOST', 'localhost'),
+  database=os.environ.get('POSTGRES_DB', 'mydb'),
+  user=os.environ.get('POSTGRES_USER', 'user'),
+  password=os.environ.get('POSTGRES_PASSWORD', 'password'))
+
+def get_db_connection():
+  if connection_pool:
+    return connection_pool.getconn()
+
+def release_db_connection(conn):
+  if connection_pool:
+    connection_pool.putconn(conn)
+...
+```
+
+### Benefits
+
+- Connection pooling reuses connections, reducing the overhead of creating new ones.
+- Helps prevent hitting connection limits on the database server.
+- Helps improve performance in high-traffic situations.
 
 # Development
 
