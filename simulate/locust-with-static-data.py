@@ -4,8 +4,11 @@ import random
 class UserBehavior(TaskSet):
   @task
   def query_weather(self):
-    locations = ['Aaronburgh', 'Aaronbury', 'Aaronmouth', 'Aaronstad', 'Aaronton']
-    self.client.post('/query', data={'location': random.choice(locations)})
+    locations = ['Aaronfort', 'Abigailton', 'Abigailtown', 'Acevedofourt', 'Abigailshire']
+    # GET homepage
+    self.client.get('/')
+    # POST query to server
+    # self.client.post('/query', data={'location': random.choice(locations)})
 
 class WebsiteUser(HttpUser):
   tasks = [UserBehavior]
