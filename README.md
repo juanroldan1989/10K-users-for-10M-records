@@ -401,52 +401,48 @@ Access: `http://localhost:5000`
 
 # Bottlenecks & Fixes
 
-## In-Memory caching
+## Too many database queries
 
-- In-memory cache for **locations** to avoid querying the database repeatedly for **the same data**.
+- Caching **locations** results to avoid querying the database repeatedly for **the same data**.
 
 - This cache could be **refreshed** periodically (e.g., every few minutes) while the script runs.
 
-Using Python's functools.lru_cache:
-
 ```ruby
-from functools import lru_cache
-import time
+# cache.py
 
-@lru_cache(maxsize=1)  # Cache the result for efficiency
-def fetch_locations_from_db():
-    conn = get_db_connection()
-    if conn:
-        try:
-            cur = conn.cursor()
-            cur.execute("SELECT DISTINCT location FROM weather_data LIMIT 10")
-            locations = cur.fetchall()
-            cur.close()
-            return [loc[0] for loc in locations]
-        finally:
-            release_db_connection(conn)
+import redis
+import os
+import json
+from flask import jsonify
 
-# Refresh the cache every 60 seconds (this is up to you to control)
-last_cache_update = time.time()
+# Initialize Redis client
+redis_host = os.environ.get('REDIS_HOST')
+redis_port = int(os.environ.get('REDIS_PORT'))
+redis_client = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
 
-class UserBehavior(TaskSet):
-    @task
-    def query_weather(self):
-        global last_cache_update
-        if time.time() - last_cache_update > 60:
-            fetch_locations_from_db.cache_clear()  # Clear cache every 60 seconds
-            last_cache_update = time.time()
+# Check if caching is enabled
+caching_enabled = os.environ.get('CACHE', 'false').lower() == 'true'
+cache_expiry = int(os.environ.get('CACHE_EXPIRY', 300))
 
-        locations = fetch_locations_from_db()
+def cache_query(key, fetch_function):
+  if not caching_enabled:
+    return fetch_function()  # Fetch without caching
 
-        if locations:
-            selected_location = random.choice(locations)
-            self.client.post("/query", data={'location': selected_location})
+  if redis_client.exists(key):
+    print(f"Cache hit for key: {key}")
+    # Return cached data
+    return json.loads(redis_client.get(key))
+
+  print(f"Cache miss for key: {key}")
+  # Fetch fresh data and cache it
+  data = fetch_function()
+  redis_client.set(key, json.dumps(data), ex=300)  # Cache for 5 minutes
+  return data
 ```
 
 ### Benefits
 
-- Avoids constant database reads, as locations are cached in memory.
+- Avoids constant database reads, as locations are cached in redis.
 - Reduces load on the database by limiting the frequency of queries.
 
 ## Sorry, too many clients already
