@@ -6,9 +6,9 @@ class UserBehavior(TaskSet):
   def query_weather(self):
     locations = ['Aaronfort', 'Abigailton', 'Abigailtown', 'Acevedofourt', 'Abigailshire']
     # GET homepage
-    self.client.get('/')
+    # self.client.get('/')
     # POST query to server
-    # self.client.post('/query', data={'location': random.choice(locations)})
+    self.client.post('/query', data={'location': random.choice(locations)})
 
 class WebsiteUser(HttpUser):
   tasks = [UserBehavior]

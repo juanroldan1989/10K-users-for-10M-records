@@ -109,7 +109,7 @@ locust -f locust-with-static-data.py --host=http://localhost:5000
 
 https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/flask
 
-## Locust configuration
+## Locust
 
 Access `http://localhost:8089` in browser to start the test, where you can configure all the parameters:
 
@@ -137,6 +137,37 @@ In this case, Locust will:
 - Start **50 users** per second.
 - After 20 seconds, Locust will have reached **1000 users** (50 users \* 20 seconds = 1000 users).
 - Once the 1000 users are reached, the **test will continue with those 1000 users until you stop it** or the test reaches a defined time limit.
+
+## Local - Load Testing (1)
+
+- Number of users (peak concurrency): **1000**
+- Ramp up (users started/second): **10**
+
+[image]
+
+- **1** Postgres instance
+- **1** NGINX container (load-balancing configured)
+
+```ruby
+...
+upstream flask {
+  server flask:5000;
+  server flask_replica_1:5000;
+  server flask_replica_2:5000;
+}
+...
+```
+
+- **3** FLASK containers
+- **Database Connection Pooling** logic enabled on each `Flask` container:
+
+```ruby
+...
+USE_POOLING: "true"
+POOL_MINCONN: 5
+POOL_MAXCONN: 15
+...
+```
 
 # Development
 
@@ -335,6 +366,37 @@ def release_db_connection(conn):
 - Connection pooling reuses connections, reducing the overhead of creating new ones.
 - Helps prevent hitting connection limits on the database server.
 - Helps improve performance in high-traffic situations.
+
+# Useful commands
+
+```ruby
+docker image ls
+REPOSITORY                                  TAG       IMAGE ID       CREATED             SIZE
+10k-users-for-10m-records-flask             latest    6d116b2b33f7   17 minutes ago      156MB
+10k-users-for-10m-records-flask_replica_2   latest    6afbf47cce3f   17 minutes ago      156MB
+10k-users-for-10m-records-flask_replica_1   latest    3f7df984ce90   17 minutes ago      156MB
+10k-users-for-10m-records-nginx             latest    67e6b00b8b18   About an hour ago   47MB
+10k-users-for-10m-records-data-populator    latest    05edfd730fa4   21 hours ago        155MB
+10k-users-for-10m-records-data-query        latest    3b7df6b4b1cb   21 hours ago        155MB
+postgres                                    13        d76feacfc4a6   2 months ago        419MB
+```
+
+```ruby
+docker image ls --format '{{.Repository}} {{.ID}}' | grep flask
+10k-users-for-10m-records-flask 6d116b2b33f7
+10k-users-for-10m-records-flask_replica_2 6afbf47cce3f
+10k-users-for-10m-records-flask_replica_1 3f7df984ce90
+```
+
+```ruby
+$ docker image rm $(docker image ls --format '{{.Repository}} {{.ID}}' | grep flask) -f
+Untagged: 10k-users-for-10m-records-flask_replica_1:latest
+Deleted: sha256:3f7df984ce90442566fbfaa7a00a580092ac7bb8b6ecf7ef94211c1c55bd2004
+Untagged: 10k-users-for-10m-records-flask:latest
+Deleted: sha256:6d116b2b33f7fef3f6ea97ae6f804b7eef331f52278c41e1a82661c694226ff5
+Untagged: 10k-users-for-10m-records-flask_replica_2:latest
+Deleted: sha256:6afbf47cce3f4ac2673f357dcbc883d8ffe5afcee74c334cd334a1d6c9133920
+```
 
 # Contribute
 
