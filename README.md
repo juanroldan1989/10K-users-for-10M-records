@@ -205,6 +205,8 @@ POOL_MAXCONN: 15
 - In a real-world scenario, users might query the same location repeatedly, e.g., a user checking **weather for their hometown**
 - We **assign each virtual user** a specific location and have them **always query the same** one throughout their session.
 
+![total_requests_per_second_fixed_locations](https://github.com/user-attachments/assets/8991c0ac-e0d0-463d-bb69-2f663bffefe6)
+
 Components:
 
 - Flask API Returns `AVG Temperature` for `location`
@@ -219,6 +221,8 @@ Components:
 - Showcasing **hot spots** for location values
 - where **certain** locations are queried **more frequently** than others
 - increasing the **likelihood** of cache hits.
+
+![total_requests_per_second_weighted_locations](https://github.com/user-attachments/assets/14a7bbd0-4924-4639-8791-8c3a4cd9431c)
 
 Components:
 
