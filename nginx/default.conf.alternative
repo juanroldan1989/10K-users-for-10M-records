@@ -5,7 +5,6 @@ upstream flask {
   server flask:5000;
   server flask_replica_1:5000;
   server flask_replica_2:5000;
-  server flask_replica_3:5000;
 }
 
 proxy_set_header Host $host;

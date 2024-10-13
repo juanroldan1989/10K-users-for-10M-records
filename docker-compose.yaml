@@ -68,7 +68,67 @@ services:
       POSTGRES_HOST: db
       POSTGRES_DB: mydb
     ports:
-      - "5000:5000"
+      - "5000"
+    networks:
+      - backnet
+      - frontnet
+    depends_on:
+      db:
+        condition: service_healthy
+      data-populator:
+        condition: service_completed_successfully
+      data-query:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl --silent --fail localhost:5000/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+  flask_replica_1:
+    build:
+      context: .
+      dockerfile: flask/Dockerfile
+    container_name: flask_replica_1
+    environment:
+      FLASK_ENV: development
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: db
+      POSTGRES_DB: mydb
+    ports:
+      - "5000"
+    networks:
+      - backnet
+      - frontnet
+    depends_on:
+      db:
+        condition: service_healthy
+      data-populator:
+        condition: service_completed_successfully
+      data-query:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl --silent --fail localhost:5000/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+  flask_replica_2:
+    build:
+      context: .
+      dockerfile: flask/Dockerfile
+    container_name: flask_replica_2
+    environment:
+      FLASK_ENV: development
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: db
+      POSTGRES_DB: mydb
+    ports:
+      - "5000"
     networks:
       - backnet
       - frontnet
@@ -98,6 +158,8 @@ services:
       - frontnet
     depends_on:
       - flask
+      - flask_replica_1
+      - flask_replica_2
 
 volumes:
   postgres_data:
