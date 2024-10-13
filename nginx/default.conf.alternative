@@ -1,0 +1,30 @@
+# NGINX configured to work as a reverse proxy AND load balancer for a Flask app.
+proxy_cache_path /tmp/cache levels=1:2 keys_zone=cache:10m max_size=500m inactive=60m use_temp_path=off;
+
+upstream flask {
+  server flask:5000;
+  server flask_replica_1:5000;
+  server flask_replica_2:5000;
+  server flask_replica_3:5000;
+}
+
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Host $server_name;
+
+server {
+  listen 80;
+
+  # The location / {} block will catch all URLs starting from /, so any requests to /upload, /files,
+  # or any other URL will be passed to your Flask app.
+  location / {
+    proxy_pass http://flask; # forwards all these requests to your upstream Flask server.
+    proxy_redirect off;
+  }
+
+  location /health-check {
+    add_header Content-Type text/plain;
+    return 200 "success";
+  }
+}
