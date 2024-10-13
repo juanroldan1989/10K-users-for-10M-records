@@ -109,7 +109,14 @@ locust -f post-request-api-and-db.py --host=http://localhost:8000
 
 https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/flask
 
-## Locust
+# The App
+
+1. User chooses Location from dropdown.
+2. User submits form.
+3. App queries database.
+4. Average Temperature for Location is displayed.
+
+# Locust
 
 Access `http://localhost:8089` in browser to start the test, where you can configure all the parameters:
 
@@ -138,12 +145,12 @@ In this case, Locust will:
 - After 20 seconds, Locust will have reached **1000 users** (50 users \* 20 seconds = 1000 users).
 - Once the 1000 users are reached, the **test will continue with those 1000 users until you stop it** or the test reaches a defined time limit.
 
-## Local - Load Testing (1)
+# Local - Load Testing (1)
 
 - Number of users (peak concurrency): **1000**
 - Ramp up (users started/second): **10**
 
-### API - POST `/query` -> `(data: { location: "<random-location-value>" })`
+## API - POST `/query` -> `(data: { location: "<random-location-value>" })`
 
 ![total_requests_per_second_1728822017 726](https://github.com/user-attachments/assets/1d815e1d-2972-4c74-9ef4-cd185e5feb78)
 
@@ -200,7 +207,7 @@ POOL_MAXCONN: 15
 ...
 ```
 
-### API - POST `/query` -> `(data: { location: "<fixed-location-value>" })`
+## API - POST `/query` -> `(data: { location: "<fixed-location-value>" })`
 
 - In a real-world scenario, users might query the same location repeatedly, e.g., a user checking **weather for their hometown**
 - We **assign each virtual user** a specific location and have them **always query the same** one throughout their session.
@@ -216,7 +223,7 @@ Components:
 - Each **Flask** container with connection pooling **enabled**
 - Each **Flask** container with caching **enabled**
 
-### API - POST `/query` -> `(data: { location: "<weigthed-location-value>" })`
+## API - POST `/query` -> `(data: { location: "<weigthed-location-value>" })`
 
 - Showcasing **hot spots** for location values
 - where **certain** locations are queried **more frequently** than others
@@ -243,20 +250,22 @@ $ docker-compose up
 
 ## Containers
 
-5 containers are started: **db**, **data-populator**, **data-query** and **flask**.
+6 containers are started: **db**, **redis**, **data-populator**, **data-query**, **flask** and **nginx**.
 
 1. **db** contains a PostgreSQL database
 
-2. **data-populator** inserts data in **db** once **db**'s condition is **service_healthy**
+2. **redis** containers a Redis instance
+
+3. **data-populator** inserts data in **db** once **db**'s condition is **service_healthy**
    https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/data-populator
 
-3. **data-query** performs **health-check** queries in **db** once **data-populator**'s condition is **service_completed_successfully**
+4. **data-query** performs **health-check** queries in **db** once **data-populator**'s condition is **service_completed_successfully**
    https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/data-query
 
-4. **flask** application with UI to query **temperature** data by **location**
+5. **flask** application with UI to query **temperature** data by **location**
    https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/flask
 
-5. **NGINX** reverse-proxy and load-balancer instance added. `nginx/default.conf` and `nginx/default.conf.alternative` files added with **reverse-proxy only** and **reverse-proxy + load-balancer** configurations respectively.
+6. **NGINX** reverse-proxy and load-balancer instance added. `nginx/default.conf` and `nginx/default.conf.alternative` files added with **reverse-proxy only** and **reverse-proxy + load-balancer** configurations respectively.
    https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/nginx
 
 ```ruby
@@ -272,6 +281,19 @@ db              | 2024-10-12 09:29:24.491 UTC [1] LOG:  listening on IPv6 addres
 db              | 2024-10-12 09:29:24.497 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
 db              | 2024-10-12 09:29:24.506 UTC [27] LOG:  database system was shut down at 2024-10-12 09:25:03 UTC
 db              | 2024-10-12 09:29:24.516 UTC [1] LOG:  database system is ready to accept connections
+
+redis            | 1:C 13 Oct 2024 15:42:40.248 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis            | 1:C 13 Oct 2024 15:42:40.249 * Redis version=7.4.1, bits=64, commit=00000000, modified=0, pid=1, just started
+redis            | 1:C 13 Oct 2024 15:42:40.249 * Configuration loaded
+redis            | 1:M 13 Oct 2024 15:42:40.250 * monotonic clock: POSIX clock_gettime
+redis            | 1:M 13 Oct 2024 15:42:40.251 * Running mode=standalone, port=6379.
+redis            | 1:M 13 Oct 2024 15:42:40.252 * Server initialized
+redis            | 1:M 13 Oct 2024 15:42:40.252 * Loading RDB produced by version 7.4.1
+redis            | 1:M 13 Oct 2024 15:42:40.252 * RDB age 890 seconds
+redis            | 1:M 13 Oct 2024 15:42:40.252 * RDB memory usage when created 1.02 Mb
+redis            | 1:M 13 Oct 2024 15:42:40.252 * Done loading RDB, keys loaded: 0, keys expired: 5.
+redis            | 1:M 13 Oct 2024 15:42:40.252 * DB loaded from disk: 0.000 seconds
+redis            | 1:M 13 Oct 2024 15:42:40.252 * Ready to accept connections tcp
 
 data-populator  | 1000/10000 records inserted
 data-populator  | 2000/10000 records inserted
