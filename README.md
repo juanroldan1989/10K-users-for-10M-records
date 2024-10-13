@@ -228,6 +228,54 @@ Access: `http://localhost:5000`
 
 # Bottlenecks & Fixes
 
+## In-Memory caching
+
+- In-memory cache for **locations** to avoid querying the database repeatedly for **the same data**.
+
+- This cache could be **refreshed** periodically (e.g., every few minutes) while the script runs.
+
+Using Python's functools.lru_cache:
+
+```ruby
+from functools import lru_cache
+import time
+
+@lru_cache(maxsize=1)  # Cache the result for efficiency
+def fetch_locations_from_db():
+    conn = get_db_connection()
+    if conn:
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT DISTINCT location FROM weather_data LIMIT 10")
+            locations = cur.fetchall()
+            cur.close()
+            return [loc[0] for loc in locations]
+        finally:
+            release_db_connection(conn)
+
+# Refresh the cache every 60 seconds (this is up to you to control)
+last_cache_update = time.time()
+
+class UserBehavior(TaskSet):
+    @task
+    def query_weather(self):
+        global last_cache_update
+        if time.time() - last_cache_update > 60:
+            fetch_locations_from_db.cache_clear()  # Clear cache every 60 seconds
+            last_cache_update = time.time()
+
+        locations = fetch_locations_from_db()
+
+        if locations:
+            selected_location = random.choice(locations)
+            self.client.post("/query", data={'location': selected_location})
+```
+
+### Benefits
+
+- Avoids constant database reads, as locations are cached in memory.
+- Reduces load on the database by limiting the frequency of queries.
+
 ## Sorry, too many clients already
 
 From `docker-compose` logs:
