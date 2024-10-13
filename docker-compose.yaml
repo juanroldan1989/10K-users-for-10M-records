@@ -20,6 +20,20 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backnet
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: ["redis-server", "--loglevel", "verbose"]
+
   data-populator:
     build:
       context: .
@@ -70,6 +84,10 @@ services:
       USE_POOLING: "true"
       POOL_MINCONN: 5
       POOL_MAXCONN: 15
+      CACHE: "true"
+      CACHE_EXPIRY: 300
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - "5000"
     networks:
@@ -77,6 +95,8 @@ services:
       - frontnet
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       data-populator:
         condition: service_completed_successfully
@@ -103,6 +123,10 @@ services:
       USE_POOLING: "true"
       POOL_MINCONN: 5
       POOL_MAXCONN: 15
+      CACHE: "true"
+      CACHE_EXPIRY: 300
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - "5000"
     networks:
@@ -110,6 +134,8 @@ services:
       - frontnet
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       data-populator:
         condition: service_completed_successfully
@@ -136,6 +162,10 @@ services:
       USE_POOLING: "true"
       POOL_MINCONN: 5
       POOL_MAXCONN: 15
+      CACHE: "true"
+      CACHE_EXPIRY: 300
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - "5000"
     networks:
@@ -143,6 +173,8 @@ services:
       - frontnet
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       data-populator:
         condition: service_completed_successfully

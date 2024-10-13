@@ -1,3 +1,7 @@
+# Random locations on every request
+# the distribution could be very diverse
+# and cache hits may be rare.
+
 from locust import HttpUser, TaskSet, task
 import random
 
