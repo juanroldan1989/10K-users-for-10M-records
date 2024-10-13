@@ -158,6 +158,8 @@ In this case, Locust will:
 API - POST `/query` -> `(data: { location: "<random-location-value>" })`
 ```
 
+https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/simulate/post/random-locations.py
+
 ![total_requests_per_second_1728822017 726](https://github.com/user-attachments/assets/1d815e1d-2972-4c74-9ef4-cd185e5feb78)
 
 - Flask API Returns `AVG Temperature` for `location`
@@ -219,6 +221,8 @@ POOL_MAXCONN: 15
 API - POST `/query` -> `(data: { location: "<fixed-location-value>" })`
 ```
 
+https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/simulate/post/fixed-location.py
+
 - In a real-world scenario, users might query the same location repeatedly, e.g., a user checking **weather for their hometown**
 - We **assign each virtual user** a specific location and have them **always query the same** one throughout their session.
 
@@ -239,6 +243,8 @@ Components:
 API - POST `/query` -> `(data: { location: "<weigthed-location-value>" })`
 ```
 
+https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/simulate/post/weighted-locations.py
+
 - Showcasing **hot spots** for location values
 - where **certain** locations are queried **more frequently** than others
 - increasing the **likelihood** of cache hits.
@@ -253,6 +259,28 @@ Components:
 - **3** FLASK containers
 - Each **Flask** container with connection pooling **enabled**
 - Each **Flask** container with caching **enabled**
+
+## Conclusions
+
+- Performing a load test within an application is not only about **load-balancing**, **caching** or **database connection pooling mechanisms**.
+
+- It's also important to define **proper experiments**
+
+- This way, results provide **valuable insights** and engineers can improve platforms accordingly.
+
+- Both **fixed location** and **weighted location** experiments showed `Response Time` remained under `~6s` with `~800 users per second` was reached.
+
+- **weighted location** experiment showed `Response Time` remained under `~6s` all the way until `~1000 users per second` was reached.
+
+- **random location** experiment showed `Response Time` slower than other 2 experiments. From this I can gather:
+
+1. **The way response times are measured can also influence the perceived performance.**
+
+- For example, if the first request for a "random location" is a cache miss and takes longer, while subsequent requests benefit from caching, **this can skew the average response time.**
+
+2. **The nature of the data might lead to varied response times.**
+
+- For instance, if most of your database records pertain to a few popular locations, those queries will naturally be faster.
 
 # Development
 
