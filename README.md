@@ -162,7 +162,7 @@ upstream flask {
 ```
 
 - **3** FLASK containers
-- Caching **disabled**
+- Each **Flask** container with caching **enabled**
 - **Database Connection Pooling** logic enabled:
 
 https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/flask/db.py
@@ -199,6 +199,35 @@ POOL_MINCONN: 5
 POOL_MAXCONN: 15
 ...
 ```
+
+### API - POST `/query` -> `(data: { location: "<fixed-location-value>" })`
+
+- In a real-world scenario, users might query the same location repeatedly, e.g., a user checking **weather for their hometown**
+- We **assign each virtual user** a specific location and have them **always query the same** one throughout their session.
+
+Components:
+
+- Flask API Returns `AVG Temperature` for `location`
+- **1** Postgres DB instance
+- **1** NGINX container (load-balancing configured) serving requests to `Flask` containers
+- **3** FLASK containers
+- Each **Flask** container with connection pooling **enabled**
+- Each **Flask** container with caching **enabled**
+
+### API - POST `/query` -> `(data: { location: "<weigthed-location-value>" })`
+
+- Showcasing **hot spots** for location values
+- where **certain** locations are queried **more frequently** than others
+- increasing the **likelihood** of cache hits.
+
+Components:
+
+- Flask API Returns `AVG Temperature` for `location`
+- **1** Postgres DB instance
+- **1** NGINX container (load-balancing configured) serving requests to `Flask` containers
+- **3** FLASK containers
+- Each **Flask** container with connection pooling **enabled**
+- Each **Flask** container with caching **enabled**
 
 # Development
 
