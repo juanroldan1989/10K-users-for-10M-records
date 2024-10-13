@@ -1,5 +1,6 @@
 Faker==30.3.0
 Flask==3.0.3
+Flask-Caching==2.3.0
 psycopg==3.2.3
 psycopg2-binary==2.9.9
 python-dateutil==2.9.0.post0
