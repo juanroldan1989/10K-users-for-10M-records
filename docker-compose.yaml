@@ -13,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - my_network
+      - backnet
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
       interval: 10s
@@ -33,7 +33,7 @@ services:
       BATCH_SIZE: 1000
       TOTAL_RECORDS: 10000
     networks:
-      - my_network
+      - backnet
     depends_on:
       db:
         condition: service_healthy
@@ -49,7 +49,7 @@ services:
       POSTGRES_HOST: db
       POSTGRES_DB: mydb
     networks:
-      - my_network
+      - backnet
     depends_on:
       db:
         condition: service_healthy
@@ -70,7 +70,8 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - my_network
+      - backnet
+      - frontnet
     depends_on:
       db:
         condition: service_healthy
@@ -78,9 +79,29 @@ services:
         condition: service_completed_successfully
       data-query:
         condition: service_completed_successfully
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl --silent --fail localhost:5000/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: nginx
+    restart: always
+    ports:
+      - "8000:80"
+    networks:
+      - frontnet
+    depends_on:
+      - flask
 
 volumes:
   postgres_data:
 
 networks:
-  my_network:
+  backnet:
+  frontnet:

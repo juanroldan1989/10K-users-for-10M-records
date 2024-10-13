@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import psycopg2
 import os
 
@@ -42,3 +42,7 @@ def query():
   conn.close()
 
   return render_template('results.html', location=location, avg_temp=f"{average_temperature:.2f}")
+
+@app.route('/health', methods=['GET'])
+def health():
+  return jsonify(status='ok', message='Healthy', code=200)
