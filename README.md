@@ -91,16 +91,16 @@ class WebsiteUser(HttpUser):
   max_wait = 2000
 ```
 
-- Run Locust using a DB query to fetch 10 locations:
+- Run Locust to reach app home page:
 
 ```ruby
-locust -f locust-with-real-data.py --host=http://localhost:5000
+locust -f get-request-home-page.py --host=http://localhost:8000
 ```
 
 - Run Locust using a static list of 10 locations harcoded:
 
 ```ruby
-locust -f locust-with-static-data.py --host=http://localhost:5000
+locust -f post-request-api-and-db.py --host=http://localhost:8000
 ```
 
 3. Access `http://localhost:8089` in browser to start the test, where you can configure the number of users to simulate.
@@ -143,10 +143,13 @@ In this case, Locust will:
 - Number of users (peak concurrency): **1000**
 - Ramp up (users started/second): **10**
 
-[image]
+### API - POST `/query` -> `(data: { location: "<random-location-value>" })`
 
-- **1** Postgres instance
-- **1** NGINX container (load-balancing configured)
+![total_requests_per_second_1728822017 726](https://github.com/user-attachments/assets/1d815e1d-2972-4c74-9ef4-cd185e5feb78)
+
+- Flask API Returns `AVG Temperature` for `location`
+- **1** Postgres DB instance
+- **1** NGINX container (load-balancing configured) serving requests to `Flask` containers
 
 ```ruby
 ...
@@ -159,7 +162,35 @@ upstream flask {
 ```
 
 - **3** FLASK containers
-- **Database Connection Pooling** logic enabled on each `Flask` container:
+- Caching **disabled**
+- **Database Connection Pooling** logic enabled:
+
+https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/flask/db.py
+
+```ruby
+def get_db_connection():
+  if USE_POOLING and connection_pool:
+    try:
+      conn = connection_pool.getconn()
+      if conn:
+        return conn
+    except Exception as e:
+      print(f"Error getting connection from pool: {e}")
+  else:
+    try:
+      conn = psycopg2.connect(
+        host=os.environ.get('POSTGRES_HOST'),
+        database=os.environ.get('POSTGRES_DB'),
+        user=os.environ.get('POSTGRES_USER'),
+        password=os.environ.get('POSTGRES_PASSWORD')
+      )
+      return conn
+    except psycopg2.OperationalError as e:
+      print(f"Error connecting to the database: {e}")
+      return None
+```
+
+- Each **Flask** container with connection pooling **enabled**:
 
 ```ruby
 ...
