@@ -116,6 +116,8 @@ https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/flask
 3. App queries database.
 4. Average Temperature for Location is displayed.
 
+https://github.com/user-attachments/assets/1d0b4d84-8a58-40ff-b60d-950a78242331
+
 # Locust
 
 Access `http://localhost:8089` in browser to start the test, where you can configure all the parameters:
@@ -150,7 +152,11 @@ In this case, Locust will:
 - Number of users (peak concurrency): **1000**
 - Ramp up (users started/second): **10**
 
-## API - POST `/query` -> `(data: { location: "<random-location-value>" })`
+## Random `location` submitted from each user
+
+```ruby
+API - POST `/query` -> `(data: { location: "<random-location-value>" })`
+```
 
 ![total_requests_per_second_1728822017 726](https://github.com/user-attachments/assets/1d815e1d-2972-4c74-9ef4-cd185e5feb78)
 
@@ -207,7 +213,11 @@ POOL_MAXCONN: 15
 ...
 ```
 
-## API - POST `/query` -> `(data: { location: "<fixed-location-value>" })`
+## Fixed `location` submitted from each user
+
+```ruby
+API - POST `/query` -> `(data: { location: "<fixed-location-value>" })`
+```
 
 - In a real-world scenario, users might query the same location repeatedly, e.g., a user checking **weather for their hometown**
 - We **assign each virtual user** a specific location and have them **always query the same** one throughout their session.
@@ -223,7 +233,11 @@ Components:
 - Each **Flask** container with connection pooling **enabled**
 - Each **Flask** container with caching **enabled**
 
-## API - POST `/query` -> `(data: { location: "<weigthed-location-value>" })`
+## Weighted `location` submitted from each user
+
+```ruby
+API - POST `/query` -> `(data: { location: "<weigthed-location-value>" })`
+```
 
 - Showcasing **hot spots** for location values
 - where **certain** locations are queried **more frequently** than others
