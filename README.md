@@ -75,14 +75,15 @@ pip install locust
 
 ```ruby
 from locust import HttpUser, TaskSet, task
-```
 
-```ruby
 class UserBehavior(TaskSet):
   @task
   def query_weather(self):
-    locations = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix']
-    self.client.post("/query", data={'location': random.choice(locations)})
+    locations = ['Aaronfort', 'Abigailton', 'Abigailtown', 'Acevedofourt', 'Abigailshire']
+    # GET homepage
+    self.client.get('/')
+    # POST query to server
+    # self.client.post('/query', data={'location': random.choice(locations)})
 
 class WebsiteUser(HttpUser):
   tasks = [UserBehavior]
@@ -147,7 +148,7 @@ $ docker-compose up
 
 ## Containers
 
-4 containers are started: **db**, **data-populator**, **data-query** and **flask**.
+5 containers are started: **db**, **data-populator**, **data-query** and **flask**.
 
 1. **db** contains a PostgreSQL database
 
@@ -159,6 +160,9 @@ $ docker-compose up
 
 4. **flask** application with UI to query **temperature** data by **location**
    https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/flask
+
+5. **NGINX** reverse-proxy and load-balancer instance added. `nginx/default.conf` and `nginx/default.conf.alternative` files added with **reverse-proxy only** and **reverse-proxy + load-balancer** configurations respectively.
+   https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/nginx
 
 ```ruby
 $ docker-compose up
@@ -217,6 +221,16 @@ flask           | [2024-10-12 13:06:24 +0000] [1] [INFO] Using worker: sync
 flask           | [2024-10-12 13:06:24 +0000] [6] [INFO] Booting worker with pid: 6
 flask           | [2024-10-12 13:06:24 +0000] [7] [INFO] Booting worker with pid: 7
 flask           | [2024-10-12 13:06:24 +0000] [8] [INFO] Booting worker with pid: 8
+
+nginx            | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+nginx            | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+nginx            | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+nginx            | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+nginx            | 10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+nginx            | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+nginx            | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+nginx            | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+nginx            | /docker-entrypoint.sh: Configuration complete; ready for start up
 ```
 
 Access: `http://localhost:5000`
