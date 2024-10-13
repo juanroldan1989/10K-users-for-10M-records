@@ -160,7 +160,7 @@ API - POST `/query` -> `(data: { location: "<random-location-value>" })`
 
 https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/simulate/post/random-locations.py
 
-![total_requests_per_second_1728822017 726](https://github.com/user-attachments/assets/1d815e1d-2972-4c74-9ef4-cd185e5feb78)
+![total_requests_per_second_random_locations](https://github.com/user-attachments/assets/d8b3d81c-5a8d-47d4-985e-2165edfec6ba)
 
 - Flask API Returns `AVG Temperature` for `location`
 - **1** Postgres DB instance
