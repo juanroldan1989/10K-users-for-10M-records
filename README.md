@@ -147,7 +147,7 @@ In this case, Locust will:
 - After 20 seconds, Locust will have reached **1000 users** (50 users \* 20 seconds = 1000 users).
 - Once the 1000 users are reached, the **test will continue with those 1000 users until you stop it** or the test reaches a defined time limit.
 
-# Local - Load Testing (1)
+# Local - Load Testing scenarios
 
 - Number of users (peak concurrency): **1000**
 - Ramp up (users started/second): **10**
@@ -281,6 +281,21 @@ Components:
 2. **The nature of the data might lead to varied response times.**
 
 - For instance, if most of your database records pertain to a few popular locations, those queries will naturally be faster.
+
+# AWS - Load Testing scenarios
+
+[work in progress]
+
+- Number of users (peak concurrency): **1000**
+- Ramp up (users started/second): **10**
+
+## Random `location` submitted from each user
+
+```ruby
+API - POST `/query` -> `(data: { location: "<random-location-value>" })`
+```
+
+...
 
 # Development
 
