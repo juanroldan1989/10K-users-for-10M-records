@@ -289,6 +289,72 @@ Components:
 - Number of users (peak concurrency): **1000**
 - Ramp up (users started/second): **10**
 
+## Provision Infrastructure
+
+### Docker Images (build/push)
+
+#### Option 1: Build/Push all required images with 1 script
+
+```ruby
+$ ./build_and_push_images.sh
+```
+
+#### Option 2: Buid/Push images separately (ideal when making adjustments to specific images)
+
+1. Build `data-populator` image and push to Docker Hub.
+
+```ruby
+$ cd data-populator
+
+$ docker build -t juanroldan1989/data-populator .
+$ docker push juanroldan1989/data-populator:latest
+```
+
+2. Build `data-query` image and push to Docker Hub.
+
+```ruby
+$ cd data-query
+
+$ docker build -t juanroldan1989/data-query .
+$ docker push juanroldan1989/data-query:latest
+```
+
+3. Build `flask` image and push to Docker Hub.
+
+```ruby
+$ cd flask
+
+$ docker build -t juanroldan1989/flask .
+$ docker push juanroldan1989/flask:latest
+```
+
+4. Build `nginx` image and push to Docker Hub.
+
+```ruby
+$ cd nginx
+
+$ docker build -t juanroldan1989/nginx .
+$ docker push juanroldan1989/nginx:latest
+```
+
+### Terraform
+
+1. Change dir to a project `ecs-fargate-nginx-flask-db`
+2. Run commands:
+
+```ruby
+$ terraform init
+$ terraform apply
+```
+
+3. Check `output` section
+
+```ruby
+alb_dns_name = "ecs-alb-<account-id>.<region-id>.elb.amazonaws.com"
+```
+
+4. Available endpoints are:
+
 ## Random `location` submitted from each user
 
 ```ruby
