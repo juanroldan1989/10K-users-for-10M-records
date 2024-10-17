@@ -36,4 +36,4 @@ def query():
 
 @app.route('/health', methods=['GET'])
 def health():
-  return jsonify(status='ok', message='Healthy', code=200)
+  return "success"
