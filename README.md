@@ -158,6 +158,13 @@ In this case, Locust will:
 API - POST `/query` -> `(data: { location: "<random-location-value>" })`
 ```
 
+```ruby
+$ cd simulate
+$ pipenv shell
+$ pip3 install -r requirements.txt
+$ locust -f post/random-locations.py --host=http://localhost:8000
+```
+
 https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/simulate/post/random-locations.py
 
 ![total_requests_per_second_random_locations](https://github.com/user-attachments/assets/d8b3d81c-5a8d-47d4-985e-2165edfec6ba)
@@ -221,6 +228,13 @@ POOL_MAXCONN: 15
 API - POST `/query` -> `(data: { location: "<fixed-location-value>" })`
 ```
 
+```ruby
+$ cd simulate
+$ pipenv shell
+$ pip3 install -r requirements.txt
+$ locust -f post/fixed-location.py --host=http://localhost:8000
+```
+
 https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/simulate/post/fixed-location.py
 
 - In a real-world scenario, users might query the same location repeatedly, e.g., a user checking **weather for their hometown**
@@ -241,6 +255,13 @@ Components:
 
 ```ruby
 API - POST `/query` -> `(data: { location: "<weigthed-location-value>" })`
+```
+
+```ruby
+$ cd simulate
+$ pipenv shell
+$ pip3 install -r requirements.txt
+$ locust -f post/weighted-locations.py --host=http://localhost:8000
 ```
 
 https://github.com/juanroldan1989/10K-users-for-10M-records/blob/main/simulate/post/weighted-locations.py
@@ -282,24 +303,17 @@ Components:
 
 - For instance, if most of your database records pertain to a few popular locations, those queries will naturally be faster.
 
-# AWS - Load Testing scenarios
+# AWS - Provision Infrastructure
 
-[work in progress]
+## Docker Images (build/push)
 
-- Number of users (peak concurrency): **1000**
-- Ramp up (users started/second): **10**
-
-## Provision Infrastructure
-
-### Docker Images (build/push)
-
-#### Option 1: Build/Push all required images with 1 script
+### Option 1: Build/Push all required images with 1 script
 
 ```ruby
 $ ./build_and_push_images.sh
 ```
 
-#### Option 2: Buid/Push images separately (ideal when making adjustments to specific images)
+### Option 2: Buid/Push images separately (ideal when making adjustments to specific images)
 
 1. Build `data-populator` image and push to Docker Hub.
 
@@ -337,7 +351,13 @@ $ docker build -t juanroldan1989/nginx .
 $ docker push juanroldan1989/nginx:latest
 ```
 
-### Terraform
+### Docker cleanup (containers, images, volumes)
+
+```ruby
+$ ./docker_clean_up.sh
+```
+
+## Terraform
 
 1. Change dir to a project `ecs-fargate-nginx-flask-db`
 2. Run commands:
@@ -358,13 +378,20 @@ alb_dns_name = "ecs-alb-<account-id>.<region-id>.elb.amazonaws.com"
 - `GET /` endpoint - Landing page
 - `POST /query` endpoint - Submit Location
 
-## ECS Task replacement (force on deployment)
+### ECS Task replacement (force on deployment)
 
 ```
 $ terraform apply --auto-approve -replace="aws_ecs_task_definition.custom_nginx_flask_task"
 ```
 
-## Random `location` submitted from each user
+## Load Testing scenarios
+
+[work in progress]
+
+- Number of users (peak concurrency): **1000**
+- Ramp up (users started/second): **10**
+
+### Random `location` submitted from each user
 
 ```ruby
 API - POST `/query` -> `(data: { location: "<random-location-value>" })`
