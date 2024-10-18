@@ -355,6 +355,15 @@ alb_dns_name = "ecs-alb-<account-id>.<region-id>.elb.amazonaws.com"
 
 4. Available endpoints are:
 
+- `GET /` endpoint - Landing page
+- `POST /query` endpoint - Submit Location
+
+## ECS Task replacement (force on deployment)
+
+```
+$ terraform apply --auto-approve -replace="aws_ecs_task_definition.custom_nginx_flask_task"
+```
+
 ## Random `location` submitted from each user
 
 ```ruby
