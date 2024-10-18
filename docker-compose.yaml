@@ -35,9 +35,7 @@ services:
     command: ["redis-server", "--loglevel", "verbose"]
 
   data-populator:
-    build:
-      context: .
-      dockerfile: data-populator/Dockerfile
+    build: data-populator
     container_name: data-populator
     environment:
       POSTGRES_USER: user
@@ -53,9 +51,7 @@ services:
         condition: service_healthy
 
   data-query:
-    build:
-      context: .
-      dockerfile: data-query/Dockerfile
+    build: data-query
     container_name: data-query
     environment:
       POSTGRES_USER: user
@@ -71,9 +67,7 @@ services:
         condition: service_completed_successfully
 
   flask:
-    build:
-      context: .
-      dockerfile: flask/Dockerfile
+    build: flask
     container_name: flask
     environment:
       FLASK_ENV: development
@@ -110,9 +104,7 @@ services:
       retries: 3
 
   flask_replica_1:
-    build:
-      context: .
-      dockerfile: flask/Dockerfile
+    build: flask
     container_name: flask_replica_1
     environment:
       FLASK_ENV: development
@@ -149,9 +141,7 @@ services:
       retries: 3
 
   flask_replica_2:
-    build:
-      context: .
-      dockerfile: flask/Dockerfile
+    build: flask
     container_name: flask_replica_2
     environment:
       FLASK_ENV: development
@@ -188,9 +178,7 @@ services:
       retries: 3
 
   nginx:
-    build:
-      context: .
-      dockerfile: nginx/Dockerfile
+    build: nginx
     container_name: nginx
     restart: always
     ports:

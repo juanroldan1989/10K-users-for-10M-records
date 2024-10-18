@@ -5,7 +5,7 @@
 FROM postgres:13
 
 # Copy the initialization script into the container
-COPY /database/init-db.sh /docker-entrypoint-initdb.d/init-db.sh
+COPY init-db.sh /docker-entrypoint-initdb.d/init-db.sh
 
 # Ensure the script has the correct permissions
 RUN chmod +x /docker-entrypoint-initdb.d/init-db.sh
