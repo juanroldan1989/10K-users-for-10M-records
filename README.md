@@ -444,6 +444,30 @@ $ locust -f post/fixed-location.py --host=http://ecs-alb-<account-id>.<region-id
 **Flask App with caching ENABLED (pushed to maximum number of concurrent users before ECS Task stops working)**
 ![aws_ecs_load_testing_1_ecs_task_with_caching_fixed_locations_7k_users](https://github.com/user-attachments/assets/6a8a972e-0e49-40b1-9d3f-f497ce470bb2)
 
+### Weigthed `location` submitted from each user
+
+```ruby
+API - POST `/query` -> `(data: { location: "<weighted-location-value>" })`
+```
+
+```ruby
+$ cd simulate
+$ pipenv shell
+$ pip3 install -r requirements.txt
+$ locust -f post/weigthed-locations.py --host=http://ecs-alb-<account-id>.<region-id>.elb.amazonaws.com
+```
+
+**Flask App without caching ENABLED**
+![aws_ecs_load_testing_2_ecs_tasks_weighted_locations](https://github.com/user-attachments/assets/e885889f-d738-4f03-927a-1007ac98720e)
+
+**4 ECS Tasks - Flask App without caching ENABLED**
+![aws_ecs_load_testing_4_ecs_tasks_with_caching_weighted_locations](https://github.com/user-attachments/assets/3ebd615d-0355-463b-9435-d71cdb204680)
+
+**Flask App with caching ENABLED**
+![aws_ecs_load_testing_1_ecs_task_with_caching_weighted_locations](https://github.com/user-attachments/assets/81127d33-fdc3-4e1d-b7d6-b27852a74aeb)
+
+**Flask App with caching ENABLED (pushed to maximum number of concurrent users before ECS Task stops working)**
+![aws_ecs_1_ecs_task_load_testing_with_caching__weighted_locations_1500_users](https://github.com/user-attachments/assets/50837f07-5116-4568-8a2a-2a10f626a943)
 
 # Development
 
