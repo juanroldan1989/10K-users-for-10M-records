@@ -34,6 +34,6 @@ def query():
 
   return render_template('results.html', location=location, avg_temp=average_temperature)
 
-@app.route('/health', methods=['GET'])
-def health():
+@app.route('/health-check')
+def health_check():
   return "success"
