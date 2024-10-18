@@ -586,9 +586,11 @@ Access: `http://localhost:5000`
 3. Adjust source code as needed within `flask` folder.
 4. Run `docker-compose up --build`
 
-# Bottlenecks & Fixes
+# Bottlenecks, Fixes & Improvements
 
-## Too many database queries
+## Database limitations
+
+### Too many database queries
 
 - Caching **locations** results to avoid querying the database repeatedly for **the same data**.
 
@@ -627,12 +629,12 @@ def cache_query(key, fetch_function):
   return data
 ```
 
-### Benefits
+#### Benefits
 
 - Avoids constant database reads, as locations are cached in redis.
 - Reduces load on the database by limiting the frequency of queries.
 
-## Sorry, too many clients already
+### Too many database clients already
 
 From `docker-compose` logs:
 
@@ -642,7 +644,36 @@ db | 2024-10-12 14:35:35.208 UTC [4499] FATAL:  sorry, too many clients already
 ...
 ```
 
-### Connection Pooling
+#### Connection Limits
+
+- **Max Connections on AWS RDS for PostgreSQL:** Each RDS instance class has a limit on the maximum number of connections it can support. The formula AWS uses to calculate the maximum number of connections for PostgreSQL is:
+
+```ruby
+Max connections = (DBInstanceClassMemory / 8192) \* 100
+```
+
+Where **DBInstanceClassMemory** is the memory available to the RDS instance in megabytes.
+
+Here's a rough estimate of max connections based on common instance sizes:
+
+```ruby
+db.t3.micro (1GB RAM): 34 connections
+db.t3.medium (4GB RAM): 100 connections
+db.m5.large (8GB RAM): 200 connections
+db.m5.xlarge (16GB RAM): 400 connections
+db.r5.2xlarge (64GB RAM): 1600 connections
+db.r5.12xlarge (384GB RAM): 9600 connections
+```
+
+- The larger the instance class, the more connections are supported.
+
+- If you are hitting the connection limit due to hundreds or thousands of Flask applications, consider the following strategies:
+
+1. Read Replicas: can help distribute read-heavy traffic. You can configure your Flask applications to direct read-only queries (such as data lookups) to a read replica while keeping write queries (such as updates) directed to the primary RDS instance.
+
+2. Horizontal Scaling of RDS: If your application scales beyond what a single RDS instance can handle, consider horizontal scaling using a distributed database architecture (e.g., sharding) or offloading certain workloads to Amazon Aurora (a cloud-native database with better scalability).
+
+#### Connection Pooling
 
 - Instead of opening and closing a new database connection with every request, we can use a connection pool.
 
@@ -672,7 +703,7 @@ def release_db_connection(conn):
 ...
 ```
 
-### Benefits
+#### Benefits
 
 - Connection pooling reuses connections, reducing the overhead of creating new ones.
 - Helps prevent hitting connection limits on the database server.
