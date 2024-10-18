@@ -367,11 +367,17 @@ $ terraform init
 $ terraform apply
 ```
 
+![Screenshot 2024-10-18 at 15 57 12](https://github.com/user-attachments/assets/8de0a0ab-7ebd-4076-b7e7-4b8f1f2272a6)
+
+![Screenshot 2024-10-18 at 15 56 08](https://github.com/user-attachments/assets/a9efe509-f4c0-465d-ba11-743e17d4e210)
+
 3. Check `output` section
 
 ```ruby
 alb_dns_name = "ecs-alb-<account-id>.<region-id>.elb.amazonaws.com"
 ```
+
+![Screenshot 2024-10-18 at 15 57 56](https://github.com/user-attachments/assets/4e0383c2-8b30-4f94-ba7d-7e787e83f291)
 
 4. Available endpoints are:
 
