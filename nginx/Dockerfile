@@ -11,8 +11,8 @@ RUN mkdir -p /var/cache/nginx/client_temp /var/run && \
   chown -R nonrootuser:appgroup /var/cache/nginx /var/run
 
 # Copy Nginx configuration files
-COPY --chown=nonrootuser:appgroup nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --chown=nonrootuser:appgroup nginx/nginx.conf /etc/nginx/nginx.conf
+COPY --chown=nonrootuser:appgroup default.conf /etc/nginx/conf.d/default.conf
+COPY --chown=nonrootuser:appgroup nginx.conf /etc/nginx/nginx.conf
 
 # Set the working directory
 WORKDIR /app
