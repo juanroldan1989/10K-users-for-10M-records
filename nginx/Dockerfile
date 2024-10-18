@@ -1,6 +1,9 @@
 # Start from a lightweight Nginx image
 FROM nginx:alpine
 
+# Install libcap to use setcap
+RUN apk add --no-cache libcap
+
 # Create a non-root user and group
 RUN addgroup -S appgroup && adduser -S nonrootuser -G appgroup
 
@@ -19,6 +22,9 @@ WORKDIR /app
 
 # Change ownership of the working directory to the non-root user
 RUN chown -R nonrootuser:appgroup /app
+
+# Grant the non-root user permission to bind to port 80
+RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
 # Switch to the non-root user
 USER nonrootuser
