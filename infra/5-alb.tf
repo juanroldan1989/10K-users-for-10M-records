@@ -22,22 +22,13 @@ resource "aws_lb_listener" "ecs_alb_listener" {
 }
 
 resource "aws_lb_target_group" "ecs_tg" {
-  name     = "ecs-target-group"
-  port     = 80
-  protocol = "HTTP"
-
-  # target_type = "ip": This is necessary because ECS Fargate tasks are provisioned with an IP address in the AWS VPC network,
-  # and the load balancer needs to route traffic to the IP addresses of these tasks rather than an EC2 instance ID.
+  name        = "ecs-target-group"
+  port        = 80
+  protocol    = "HTTP"
   target_type = "ip"
-
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   health_check {
-    path                = "/nginx-health-check"
-    interval            = 30        # Interval between health checks
-    timeout             = 5         # Timeout for the response from the target
-    healthy_threshold   = 3         # Number of consecutive successes to mark as healthy
-    unhealthy_threshold = 3         # Number of consecutive failures to mark as unhealthy
-    matcher             = "200-299" # Expected response status codes
+    path = "/"
   }
 }
