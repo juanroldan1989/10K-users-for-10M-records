@@ -395,6 +395,14 @@ $ terraform apply --auto-approve -replace="aws_ecs_task_definition.custom_nginx_
 - Number of users (peak concurrency): **1000**
 - Ramp up (users started/second): **10**
 
+Components:
+
+- **1** AWS RDS Instance
+- **1** AWS ALB
+- **1** ECS Service
+- **1** ECS Task (NGINX + Flask + Redis)
+- Each **Flask** container with connection pooling **enabled**
+
 ### Random `location` submitted from each user
 
 ```ruby
@@ -408,16 +416,34 @@ $ pip3 install -r requirements.txt
 $ locust -f post/random-locations.py --host=http://ecs-alb-<account-id>.<region-id>.elb.amazonaws.com
 ```
 
+**Flask App with caching DISABLED**
 ![aws_ecs_load_testing_random_locations](https://github.com/user-attachments/assets/9bbf47d9-885e-480f-a615-575978b6540e)
 
-Components:
+**Flask App with caching ENABLED**
+![aws_ecs_load_testing_1_ecs_task_with_caching_random_locations](https://github.com/user-attachments/assets/12282da5-51da-45da-b728-e39c2d634f69)
 
-- **1** AWS RDS Instance
-- **1** AWS ALB
-- **1** ECS Service
-- **1** ECS Task (NGINX + Flask + Redis)
-- Each **Flask** container with connection pooling **enabled**
-- Each **Flask** container with caching **enabled**
+**Flask App with caching ENABLED (pushed to maximum number of concurrent users before ECS Task stops working)**
+![aws_ecs_load_testing_1_ecs_task_with_caching_random_locations_4k_users](https://github.com/user-attachments/assets/ff26e36c-058e-4686-9b11-bbe523287a2b)
+
+### Fixed `location` submitted from each user
+
+```ruby
+API - POST `/query` -> `(data: { location: "<fixed-location-value>" })`
+```
+
+```ruby
+$ cd simulate
+$ pipenv shell
+$ pip3 install -r requirements.txt
+$ locust -f post/fixed-location.py --host=http://ecs-alb-<account-id>.<region-id>.elb.amazonaws.com
+```
+
+**Flask App with caching ENABLED**
+![aws_ecs_load_testing_1_ecs_task_with_caching_fixed_locations](https://github.com/user-attachments/assets/bb709e3e-c158-4628-a459-bf057b89cf80)
+
+**Flask App with caching ENABLED (pushed to maximum number of concurrent users before ECS Task stops working)**
+![aws_ecs_load_testing_1_ecs_task_with_caching_fixed_locations_7k_users](https://github.com/user-attachments/assets/6a8a972e-0e49-40b1-9d3f-f497ce470bb2)
+
 
 # Development
 
