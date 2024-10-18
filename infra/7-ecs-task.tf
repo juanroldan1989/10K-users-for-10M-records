@@ -159,7 +159,7 @@ resource "aws_ecs_task_definition" "custom_nginx_flask_task" {
         }
       ]
       healthCheck = {
-        command     = ["CMD-SHELL", "curl --silent --fail http://localhost:5000/health || exit 1"]
+        command     = ["CMD-SHELL", "curl --silent --fail http://localhost:5000/health-check || exit 1"]
         interval    = 10
         timeout     = 10
         retries     = 3
