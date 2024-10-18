@@ -401,12 +401,21 @@ $ terraform apply --auto-approve -replace="aws_ecs_task_definition.custom_nginx_
 API - POST `/query` -> `(data: { location: "<random-location-value>" })`
 ```
 
+```ruby
+$ cd simulate
+$ pipenv shell
+$ pip3 install -r requirements.txt
+$ locust -f post/random-locations.py --host=http://ecs-alb-<account-id>.<region-id>.elb.amazonaws.com
+```
+
+![aws_ecs_load_testing_random_locations](https://github.com/user-attachments/assets/9bbf47d9-885e-480f-a615-575978b6540e)
+
 Components:
 
-- 1 AWS RDS Instance
-- 1 AWS ALB
-- 1 ECS Service
-- 1 ECS Task (NGINX + Flask + Redis)
+- **1** AWS RDS Instance
+- **1** AWS ALB
+- **1** ECS Service
+- **1** ECS Task (NGINX + Flask + Redis)
 - Each **Flask** container with connection pooling **enabled**
 - Each **Flask** container with caching **enabled**
 
