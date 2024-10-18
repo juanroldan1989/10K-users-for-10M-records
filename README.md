@@ -392,8 +392,6 @@ $ terraform apply --auto-approve -replace="aws_ecs_task_definition.custom_nginx_
 
 ## Load Testing scenarios
 
-[work in progress]
-
 - Number of users (peak concurrency): **1000**
 - Ramp up (users started/second): **10**
 
@@ -403,7 +401,14 @@ $ terraform apply --auto-approve -replace="aws_ecs_task_definition.custom_nginx_
 API - POST `/query` -> `(data: { location: "<random-location-value>" })`
 ```
 
-...
+Components:
+
+- 1 AWS RDS Instance
+- 1 AWS ALB
+- 1 ECS Service
+- 1 ECS Task (NGINX + Flask + Redis)
+- Each **Flask** container with connection pooling **enabled**
+- Each **Flask** container with caching **enabled**
 
 # Development
 
