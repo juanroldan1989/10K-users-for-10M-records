@@ -22,8 +22,8 @@ FROM python:3.9-slim
 # Set the working directory
 WORKDIR /app
 
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y libpq5 \
+# Install runtime dependencies (including `curl` for health-check of Flask app)
+RUN apt-get update && apt-get install -y libpq5 curl \
   && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user and group, and set permissions
