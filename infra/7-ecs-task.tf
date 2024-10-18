@@ -141,7 +141,7 @@ resource "aws_ecs_task_definition" "custom_nginx_flask_task" {
         { "name" : "POOL_MAXCONN", "value" : "15" },
         { "name" : "CACHE", "value" : "true" },
         { "name" : "CACHE_EXPIRY", "value" : "300" },
-        { "name" : "REDIS_HOST", "value" : "redis" },
+        { "name" : "REDIS_HOST", "value" : "localhost" }, # `redis` container in same ECS (Fargate) Task, use `localhost`
         { "name" : "REDIS_PORT", "value" : "6379" }
       ]
       logConfiguration = {
