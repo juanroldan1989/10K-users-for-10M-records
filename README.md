@@ -111,6 +111,8 @@ https://github.com/juanroldan1989/10K-users-for-10M-records/tree/main/flask
 
 # The App
 
+![Screenshot 2024-09-30 at 12 28 13](https://github.com/user-attachments/assets/20bef5c8-8723-40b9-92be-be8427a8ee5e)
+
 1. User chooses Location from dropdown.
 2. User submits form.
 3. App queries database.
@@ -359,7 +361,7 @@ $ ./docker_clean_up.sh
 
 ## Terraform
 
-1. Change dir to a project `ecs-fargate-nginx-flask-db`
+1. Change dir to `infra` folder.
 2. Run commands:
 
 ```ruby
